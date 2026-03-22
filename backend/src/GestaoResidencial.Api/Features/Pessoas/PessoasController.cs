@@ -57,4 +57,19 @@ public class PessoasController : ControllerBase
 
         return Ok(resposta);
     }
+    
+    /// <summary>
+    /// Recupera os dados de todas as pessoas cadastradas.
+    /// </summary>
+    /// <returns>Retorna uma lista contendo os dados de todas as pessoas cadastradas.</returns>
+    /// <response code="200">Requisição processada com sucesso.</response>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<PessoaResposta>>> ObterTodasPessoas()
+    {
+        var resposta = await _context.Pessoas
+            .Select(p => new PessoaResposta(p.Id, p.Nome, p.Idade))
+            .ToListAsync();
+
+        return Ok(resposta);
+    }
 }
