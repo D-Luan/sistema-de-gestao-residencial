@@ -1,4 +1,5 @@
 using GestaoResidencial.Api.Data;
+using GestaoResidencial.Api.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -18,10 +19,13 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddOpenApi();
-
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
