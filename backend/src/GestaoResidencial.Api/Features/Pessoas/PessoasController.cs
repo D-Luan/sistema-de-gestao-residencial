@@ -96,4 +96,26 @@ public class PessoasController : ControllerBase
 
         return NoContent();
     }
+    
+    /// <summary>
+    /// Remove os dados de uma pessoa cadastrada.
+    /// </summary>
+    /// <param name="id">Identificador de uma pessoa cadastrada.</param>
+    /// <response code="204">Requisição processada com sucesso, mas sem conteúdo adicional.</response>
+    /// <response code="404">Pessoa não encontrada pelo ID informado.</response>
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> RemoverPessoa(int id)
+    {
+        var pessoa = await _context.Pessoas.FindAsync(id);
+
+        if (pessoa is null)
+        {
+            return NotFound();
+        }
+
+        _context.Pessoas.Remove(pessoa);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
