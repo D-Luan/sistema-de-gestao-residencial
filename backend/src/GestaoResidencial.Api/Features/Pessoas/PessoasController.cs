@@ -72,4 +72,28 @@ public class PessoasController : ControllerBase
 
         return Ok(resposta);
     }
+    
+    /// <summary>
+    /// Atualiza os dados de uma pessoa cadastrada.
+    /// </summary>
+    /// <param name="id">Identificador de uma pessoa cadastrada.</param>
+    /// <param name="requisicao">Objeto contendo novos dados a serem atualizados.</param>
+    /// <response code="204">Requisição processada com sucesso, mas sem conteúdo adicional.</response>
+    /// <response code="404">Pessoa não encontrada pelo ID informado.</response>
+    [HttpPut("{id}")]
+    public async Task<ActionResult> AtualizarPessoa(int id, PessoaRequisicao requisicao)
+    {
+        var pessoa = await _context.Pessoas.FindAsync(id);
+
+        if (pessoa is null)
+        {
+            return NotFound();
+        }
+
+        pessoa.AtualizarDados(requisicao.Nome, requisicao.Idade);
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
