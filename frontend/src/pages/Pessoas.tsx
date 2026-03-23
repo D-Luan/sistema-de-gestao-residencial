@@ -72,8 +72,13 @@ export function Pessoas() {
             setModalAberto(false);
             carregarDados();
         } catch (error: any) {
-            const mensagemErro = error.response?.data?.detail || "Ocorreu um erro ao salvar. Verifique os dados.";
-            setErroFormulario(mensagemErro);
+            const data = error.response?.data;
+            if (data?.errors) {
+                const mensagens = Object.values(data.errors).flat();
+                setErroFormulario(mensagens[0] as string);
+            } else {
+                setErroFormulario(data?.detail || "Erro inesperado.");
+            }
         }
     };
 
