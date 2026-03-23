@@ -59,16 +59,26 @@ public class PessoasController : ControllerBase
     }
     
     /// <summary>
-    /// Recupera os dados de todas as pessoas cadastradas.
+    /// Recupera os dados de todas as pessoas cadastradas de forma paginada.
     /// </summary>
-    /// <returns>Retorna uma lista contendo os dados de todas as pessoas cadastradas.</returns>
-    /// <response code="200">Requisição processada com sucesso.</response>
+    /// <param name="pagina">Número da página (padrão: 1).</param>
+    /// <param name="tamanhoPagina">Quantidade de registros por página (padrão: 10).</param>
+    /// <returns>Retorna uma lista paginada com os totais para o frontend montar a interface.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PessoaResposta>>> ObterTodasPessoas()
+    public async Task<ActionResult<PaginacaoResposta<PessoaResposta>>> ObterTodasPessoas(
+        [FromQuery] int pagina = 1, 
+        [FromQuery] int tamanhoPagina = 10)
     {
-        var resposta = await _context.Pessoas
+        var totalRegistros = await _context.Pessoas.CountAsync();
+
+        var itens = await _context.Pessoas
+            .AsNoTracking()
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
             .Select(p => new PessoaResposta(p.Id, p.Nome, p.Idade))
             .ToListAsync();
+
+        var resposta = new PaginacaoResposta<PessoaResposta>(itens, totalRegistros, pagina, tamanhoPagina);
 
         return Ok(resposta);
     }
