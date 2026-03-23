@@ -14,7 +14,7 @@ export function AppLayout() {
                 mantendo a Sidebar sempre visível e fixa na lateral.
             */}
             <main className="flex-1 overflow-y-auto p-8">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-full">
                     <Outlet />
                 </div>
             </main>
