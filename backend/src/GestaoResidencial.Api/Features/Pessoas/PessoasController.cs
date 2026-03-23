@@ -73,6 +73,7 @@ public class PessoasController : ControllerBase
 
         var itens = await _context.Pessoas
             .AsNoTracking()
+            .OrderBy(p => p.Nome)
             .Skip((pagina - 1) * tamanhoPagina)
             .Take(tamanhoPagina)
             .Select(p => new PessoaResposta(p.Id, p.Nome, p.Idade))
