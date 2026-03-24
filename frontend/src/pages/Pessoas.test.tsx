@@ -1,40 +1,50 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Pessoas } from './Pessoas';
-import { pessoaService } from '@/services/pessoaService';
+import { financeiroService } from '@/services/financeiroService';
 
-// Mock do serviço para isolar o componente e evitar chamadas HTTP reais durante a execução
+vi.mock('@/services/financeiroService', () => ({
+    financeiroService: {
+        obterTotaisPorPessoa: vi.fn()
+    }
+}));
+
 vi.mock('@/services/pessoaService', () => ({
     pessoaService: {
-        obterTodas: vi.fn()
+        criar: vi.fn(),
+        atualizar: vi.fn(),
+        remover: vi.fn()
     }
 }));
 
 /**
- * Suíte de testes da página de listagem de Pessoas.
- * Foca em garantir a renderização dos indicadores financeiros e a interatividade da UI.
+ * Suíte de testes da página de Pessoas.
+ * Assegura que a interface atende de ponta a ponta ao requisito "Consulta de totais por pessoa",
+ * verificando a montagem da tabela e a presença obrigatória dos totais gerais.
  */
 describe('Página Pessoas', () => {
     beforeEach(() => {
-        // Simula um retorno de API sem registros cadastrados
-        vi.mocked(pessoaService.obterTodas).mockResolvedValue({
+        vi.mocked(financeiroService.obterTotaisPorPessoa).mockResolvedValue({
             itens: [],
             totalRegistros: 0,
             paginaAtual: 1,
-            tamanhoPagina: 10
+            tamanhoPagina: 10,
+            totalGeralReceitas: 0,
+            totalGeralDespesas: 0,
+            saldoGeralLiquido: 0
         });
     });
 
-    it('deve renderizar os cabeçalhos e a faixa de totais', async () => {
+    it('deve renderizar os cabeçalhos e a faixa de totais do rodapé', async () => {
         render(<Pessoas />);
 
         expect(screen.getByText('Pessoas')).toBeInTheDocument();
+
+        expect(await screen.findByText('TOTAL GERAL')).toBeInTheDocument();
         expect(screen.getByText('Total de Receitas')).toBeInTheDocument();
         expect(screen.getByText('Saldo Líquido')).toBeInTheDocument();
 
-        await waitFor(() => {
-            expect(screen.getByText('Nenhuma pessoa encontrada.')).toBeInTheDocument();
-        });
+        expect(screen.getByText('Nenhuma pessoa encontrada.')).toBeInTheDocument();
     });
 
     it('deve abrir o modal de cadastro ao clicar em "Nova Pessoa"', async () => {
