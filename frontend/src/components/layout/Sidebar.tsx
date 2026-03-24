@@ -1,13 +1,11 @@
-import { LayoutDashboard, Users, Tags, CircleDollarSign } from "lucide-react";
+import { Users, Tags, CircleDollarSign } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 /**
  * Menu de navegação lateral.
  */
 export function Sidebar() {
-    // Configuração centralizada para facilitar a expansão do menu.    
     const links = [
-        { nome: "Dashboard", caminho: "/", icone: LayoutDashboard },
         { nome: "Pessoas", caminho: "/pessoas", icone: Users },
         { nome: "Categorias", caminho: "/categorias", icone: Tags },
         { nome: "Transações", caminho: "/transacoes", icone: CircleDollarSign },

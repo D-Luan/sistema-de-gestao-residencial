@@ -1,17 +1,15 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Pessoas } from "@/pages/Pessoas";
 import { Categorias } from "@/pages/Categorias";
 import { Transacoes } from "@/pages/Transacoes";
-
-const Dashboard = () => <div><h1 className="text-2xl font-bold">Dashboard</h1><p className="text-slate-500 mt-2">Em breve...</p></div>;
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/pessoas" replace />} />
           <Route path="/pessoas" element={<Pessoas />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/transacoes" element={<Transacoes />} />

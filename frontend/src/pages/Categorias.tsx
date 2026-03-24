@@ -2,23 +2,24 @@ import { useEffect, useState } from "react";
 import { Plus, Tag } from "lucide-react";
 
 import { categoriaService } from "@/services/categoriaService";
-import { type CategoriaResposta, type CategoriaRequisicao, FinalidadeCategoriaLabel, type FinalidadeCategoria } from "@/types/Categoria";
+import { financeiroService } from "@/services/financeiroService";
+import type { CategoriaRequisicao, FinalidadeCategoria } from "@/types/Categoria";
+import type { RelatorioGeralResposta, RelatorioCategoriaResposta } from "@/types/Financeiro";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 /**
- * Página de gerenciamento de Categorias.
- * Permite visualizar todas as categorias cadastradas e criar novas.
+ * Componente de Categorias.
+ * Implementa o gerenciamento (Criação/Listagem) e o requisito OPCIONAL de "Consulta de totais por categoria".
  */
 export function Categorias() {
-    const [categorias, setCategorias] = useState<CategoriaResposta[]>([]);
+    const [relatorio, setRelatorio] = useState<RelatorioGeralResposta<RelatorioCategoriaResposta> | null>(null);
     const [carregando, setCarregando] = useState(false);
 
-    // Controle do modal de criação
     const [modalAberto, setModalAberto] = useState(false);
     const [formData, setFormData] = useState<CategoriaRequisicao>({ descricao: "", finalidade: 1 });
     const [erroFormulario, setErroFormulario] = useState<string | null>(null);
@@ -27,14 +28,11 @@ export function Categorias() {
         carregarDados();
     }, []);
 
-    /**
-    * Busca a lista de categorias na API e atualiza o estado.
-    */
     const carregarDados = async () => {
         try {
             setCarregando(true);
-            const dados = await categoriaService.obterTodas();
-            setCategorias(dados);
+            const dados = await financeiroService.obterTotaisPorCategoria();
+            setRelatorio(dados);
         } catch (error) {
             console.error("Erro ao carregar categorias:", error);
             alert("Não foi possível carregar os dados. Verifique se a API está rodando.");
@@ -49,10 +47,6 @@ export function Categorias() {
         setModalAberto(true);
     };
 
-    /**
-    * Envia os dados da nova categoria para a API e, em caso de sucesso,
-    * fecha o modal e recarrega a lista.
-    */
     const handleSalvar = async () => {
         try {
             setErroFormulario(null);
@@ -70,28 +64,17 @@ export function Categorias() {
         }
     };
 
+    const formatarMoeda = (valor: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    };
+
     return (
         <div className="space-y-6">
             <div>
                 <h2 className="text-2xl font-bold tracking-tight text-slate-900">Categorias</h2>
                 <p className="text-slate-500 mt-1">
-                    Gerencie as categorias de transações para classificar suas receitas e despesas.
+                    Gerencie as categorias de transações e visualize o balanço de cada uma.
                 </p>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-md flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200">
-                <div className="flex-1 px-6 py-4">
-                    <p className="text-sm font-medium text-slate-500">Total de Receitas</p>
-                    <p className="text-2xl font-semibold text-slate-900 mt-1">R$ 0,00</p>
-                </div>
-                <div className="flex-1 px-6 py-4">
-                    <p className="text-sm font-medium text-slate-500">Total de Despesas</p>
-                    <p className="text-2xl font-semibold text-slate-900 mt-1">R$ 0,00</p>
-                </div>
-                <div className="flex-1 px-6 py-4">
-                    <p className="text-sm font-medium text-slate-500">Saldo Líquido</p>
-                    <p className="text-2xl font-semibold text-slate-900 mt-1">R$ 0,00</p>
-                </div>
             </div>
 
             <div className="space-y-3">
@@ -108,19 +91,22 @@ export function Categorias() {
                             <TableRow className="bg-slate-50">
                                 <TableHead>Descrição</TableHead>
                                 <TableHead>Finalidade</TableHead>
+                                <TableHead className="text-right">Receitas</TableHead>
+                                <TableHead className="text-right">Despesas</TableHead>
+                                <TableHead className="text-right">Saldo</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {carregando ? (
                                 <TableRow>
-                                    <TableCell colSpan={2} className="text-center h-24 text-slate-500">Carregando...</TableCell>
+                                    <TableCell colSpan={5} className="text-center h-24 text-slate-500">Carregando...</TableCell>
                                 </TableRow>
-                            ) : categorias.length === 0 ? (
+                            ) : relatorio?.itens.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={2} className="text-center h-24 text-slate-500">Nenhuma categoria encontrada.</TableCell>
+                                    <TableCell colSpan={5} className="text-center h-24 text-slate-500">Nenhuma categoria encontrada.</TableCell>
                                 </TableRow>
                             ) : (
-                                categorias.map((categoria) => (
+                                relatorio?.itens.map((categoria) => (
                                     <TableRow key={categoria.id}>
                                         <TableCell className="font-medium text-slate-900">
                                             <div className="flex items-center gap-2">
@@ -130,17 +116,46 @@ export function Categorias() {
                                         </TableCell>
                                         <TableCell>
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                                ${categoria.finalidade === 1 ? 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10' :
-                                                    categoria.finalidade === 2 ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10' :
+                                                ${categoria.finalidade === 'Despesa' ? 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10' :
+                                                    categoria.finalidade === 'Receita' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10' :
                                                         'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/10'}`}
                                             >
-                                                {FinalidadeCategoriaLabel[categoria.finalidade]}
+                                                {categoria.finalidade}
                                             </span>
+                                        </TableCell>
+                                        <TableCell className="text-right text-emerald-600 font-medium">
+                                            {formatarMoeda(categoria.totalReceitas)}
+                                        </TableCell>
+                                        <TableCell className="text-right text-red-600 font-medium">
+                                            {formatarMoeda(categoria.totalDespesas)}
+                                        </TableCell>
+                                        <TableCell className={`text-right font-bold ${categoria.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                                            {formatarMoeda(categoria.saldo)}
                                         </TableCell>
                                     </TableRow>
                                 ))
                             )}
                         </TableBody>
+                        
+                        {relatorio && (
+                            <TableFooter className="bg-slate-50/80 font-bold border-t-2 border-slate-200">
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-slate-900 uppercase">TOTAL GERAL</TableCell>
+                                    <TableCell className="text-right text-emerald-600">
+                                        <p className="text-sm font-medium text-slate-500">Total de Receitas</p>
+                                        <p className="text-base font-semibold mt-1">{formatarMoeda(relatorio.totalGeralReceitas)}</p>
+                                    </TableCell>
+                                    <TableCell className="text-right text-red-600">
+                                        <p className="text-sm font-medium text-slate-500">Total de Despesas</p>
+                                        <p className="text-base font-semibold mt-1">{formatarMoeda(relatorio.totalGeralDespesas)}</p>
+                                    </TableCell>
+                                    <TableCell className={`text-right ${relatorio.saldoGeralLiquido >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                                        <p className="text-sm font-medium text-slate-500">Saldo Líquido</p>
+                                        <p className="text-base font-semibold mt-1">{formatarMoeda(relatorio.saldoGeralLiquido)}</p>
+                                    </TableCell>
+                                </TableRow>
+                            </TableFooter>
+                        )}
                     </Table>
                 </div>
 
