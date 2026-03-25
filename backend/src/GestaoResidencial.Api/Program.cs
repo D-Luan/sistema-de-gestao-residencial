@@ -25,6 +25,14 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
 
+// Aplica as migrações automaticamente ao rodar a API
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    
+    dbContext.Database.Migrate();
+}
+
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
