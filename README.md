@@ -91,24 +91,38 @@ Preparei um ambiente automatizado para facilitar a execução do projeto.
 * Node.js
 * Python 3 (para script)
 
-### Passo 1: Infraestrutura (Banco de Dados)
-Na raiz do repositório, execute o script de automação para subir o PostgreSQL via Docker e preparar o ambiente virtual Python.
-```bash
-chmod +x setup.sh
-./setup.sh
+### Variáveis de Ambiente
+Na raiz do repositório, crie o arquivo .env e adicione suas informações do banco de dados.
+```text
+DB_USER=postgres
+DB_PASSWORD=password
+DB_NAME=db_name
 ```
-(No Windows, você pode rodar docker compose up -d na raiz, e depois configurar o ambiente virtual do Python manualmente dentro da pasta scripts/).
+
+### Passo 1: Infraestrutura (Banco de Dados)
+Na raiz do repositório, execute o script de automação para subir o PostgreSQL via Docker e preparar o ambiente virtual Python. Vale ressaltar que existem dois script, um para Windows e outro para Linux/Mac, use o correspondente ao seu sistema e certifique-se que o **Docker** esteja ligado.
+```bash
+# Linux/Mac
+bash ./setup.sh 
+
+# Windows
+.\setup.ps1
+```
 
 ### Passo 2: Iniciar a API (Back-end)
-O banco de dados será criado e as migrações aplicadas automaticamente ao rodar a API.
+O banco de dados será criado e as migrações aplicadas automaticamente ao rodar a API. E também, não esqueça de adicionar o user-secrets.
 ```bash
 cd backend/src/GestaoResidencial.Api
+
+# Substitua pelos valores que você definiu no seu .env
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=db_name;Username=postgres;Password=SENHA"
+
 dotnet run
 ```
-A API estará disponível em: https://localhost:7278. Para usar a documentação da API, entre em: https://localhost:7278/scalar/v1
+A API estará disponível em: https://localhost:7278/scalar/v1
 
 ### Passo 3: Popular o Banco de Dados (Seed Automático)
-Para não ter que cadastrar tudo manualmente, criei um script que gera uma dados falsos, respeitando todas as regras de negócio do projeto.
+Para não ter que cadastrar tudo manualmente, criei um script que gera uma dados falsos, respeitando todas as regras de negócio do projeto. Rode os comandos correspondentes ao seu sistema (Linux/Mac ou Windows).
 
 Abra outro terminal na raiz do projeto e execute:
 ```bash
@@ -138,12 +152,12 @@ O projeto conta com uma suíte abrangente para garantir a qualidade do código e
 
 **Back-end:**
 Os testes cobrem as regras de negócio do Domínio Rico (Unidade) e o comportamento real dos endpoints da API (Integração).
-- Na raiz da pasta `backend`, execute:
+- Na raiz da pasta `backend/`, execute:
 `dotnet test`
 
 **Front-end:**
-Testes focados na iteração do usuário com os componentes da interface, garantindo que fluxos como abertura de modais e listagens funcionem corretamente.
-- Na raiz da pasta `frontend`, execute:
+Testes focados na interação do usuário com os componentes da interface, garantindo que fluxos como abertura de modais e listagens funcionem corretamente.
+- Na raiz da pasta `frontend/`, execute:
 `npm run test`
 
 ## License
