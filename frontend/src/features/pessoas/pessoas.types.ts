@@ -1,7 +1,7 @@
 /**
- * Interfaces alinhadas com o Schema do Backend (.NET).
+ * Interfaces que definem a estrutura de dados para a feature de Pessoas.
+ * Centraliza os tipos para garantir consistência entre o serviço e os componentes.
  */
-
 export interface PaginacaoResposta<T> {
     itens: T[];
     totalRegistros: number;
@@ -16,7 +16,6 @@ export interface PessoaResposta {
 }
 
 export interface PessoaRequisicao {
-    // Regras: Nome máx 200 caracteres | Idade positiva
     nome: string;
     idade: number;
 }

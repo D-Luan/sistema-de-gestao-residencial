@@ -1,9 +1,9 @@
-import { api } from "./api";
-import type { PaginacaoResposta, PessoaRequisicao, PessoaResposta } from "../types/Pessoa";
+import { api } from "../../services/api";
+import type { PaginacaoResposta, PessoaRequisicao, PessoaResposta } from "./pessoas.types";
 
 /**
- * Serviço responsável por encapsular as chamadas de Pessoa.
- * Segue o padrão de isolar as regras de comunicação HTTP dos componentes visuais.
+ * Camada de serviço responsável pelas requisições HTTP da entidade Pessoa.
+ * Isola a lógica de API do restante da aplicação.
  */
 export const pessoaService = {
     obterTodas: async (pagina = 1, tamanhoPagina = 10): Promise<PaginacaoResposta<PessoaResposta>> => {
@@ -22,10 +22,6 @@ export const pessoaService = {
         await api.put(`/pessoas/${id}`, dados);
     },
 
-    /**
-     * A exclusão de uma pessoa implica na remoção de todas as suas transações
-     * vinculadas, conforme regra de negócio definida no backend.
-     */
     remover: async (id: number): Promise<void> => {
         await api.delete(`/pessoas/${id}`);
     }

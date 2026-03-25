@@ -18,9 +18,8 @@ vi.mock('@/services/pessoaService', () => ({
 }));
 
 /**
- * Suíte de testes da página de Pessoas.
- * Assegura que a interface atende de ponta a ponta ao requisito "Consulta de totais por pessoa",
- * verificando a montagem da tabela e a presença obrigatória dos totais gerais.
+ * Testes unitários e de integração para a página de Pessoas.
+ * Focado em garantir que os requisitos de exibição de totais e interação com modal funcionem.
  */
 describe('Página Pessoas', () => {
     beforeEach(() => {
@@ -40,6 +39,7 @@ describe('Página Pessoas', () => {
 
         expect(screen.getByText('Pessoas')).toBeInTheDocument();
 
+        // Verifica se a estrutura de totais gerais exigida no teste é renderizada
         expect(await screen.findByText('TOTAL GERAL')).toBeInTheDocument();
         expect(screen.getByText('Total de Receitas')).toBeInTheDocument();
         expect(screen.getByText('Saldo Líquido')).toBeInTheDocument();

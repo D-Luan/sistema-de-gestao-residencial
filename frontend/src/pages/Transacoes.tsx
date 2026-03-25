@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Plus, ChevronLeft, ChevronRight, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 
 import { transacaoService } from "@/services/transacaoService";
-import { pessoaService } from "@/services/pessoaService";
+import { pessoaService } from "@/features/pessoas/pessoaService";
 import { categoriaService } from "@/services/categoriaService";
 
 import type { TransacaoResposta, TransacaoRequisicao, TipoTransacao } from "@/types/Transacao";
-import type { PessoaResposta } from "@/types/Pessoa";
+import type { PessoaResposta } from "@/features/pessoas/pessoas.types";
 import type { CategoriaResposta } from "@/types/Categoria";
 
 import { Button } from "@/components/ui/button";

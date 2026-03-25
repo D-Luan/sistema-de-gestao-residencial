@@ -1,6 +1,6 @@
 import { api } from "./api";
 import type { TransacaoRequisicao, TransacaoResposta } from "../types/Transacao";
-import type { PaginacaoResposta } from "../types/Pessoa";
+import type { PaginacaoResposta } from "../features/pessoas/pessoas.types";
 
 /**
  * Serviço responsável por encapsular as chamadas HTTP da entidade Transação.
