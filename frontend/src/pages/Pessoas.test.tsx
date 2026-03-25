@@ -1,15 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Pessoas } from './Pessoas';
-import { financeiroService } from '@/services/financeiroService';
+import { financeiroService } from '@/features/financeiro/financeiroService';
 
-vi.mock('@/services/financeiroService', () => ({
+vi.mock('@/features/financeiro/financeiroService', () => ({
     financeiroService: {
         obterTotaisPorPessoa: vi.fn()
     }
 }));
 
-vi.mock('@/services/pessoaService', () => ({
+vi.mock('@/features/pessoas/pessoaService', () => ({
     pessoaService: {
         criar: vi.fn(),
         atualizar: vi.fn(),

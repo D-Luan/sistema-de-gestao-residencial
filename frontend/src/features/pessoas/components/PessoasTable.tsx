@@ -1,7 +1,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import type { RelatorioPessoaResposta, RelatorioPaginadoResposta } from "@/types/Financeiro";
+import type { RelatorioPessoaResposta, RelatorioPaginadoResposta } from "@/features/financeiro/financeiro.types";
 
 interface PessoasTableProps {
     relatorio: RelatorioPaginadoResposta<RelatorioPessoaResposta> | null;

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { categoriaService } from "@/features/categorias/categoriaService";
-import { financeiroService } from "@/services/financeiroService";
+import { financeiroService } from "@/features/financeiro/financeiroService";
 import type { CategoriaRequisicao } from "@/features/categorias/categorias.types";
-import type { RelatorioGeralResposta, RelatorioCategoriaResposta } from "@/types/Financeiro";
+import type { RelatorioGeralResposta, RelatorioCategoriaResposta } from "@/features/financeiro/financeiro.types";
 
 import { Button } from "@/components/ui/button";
 import { CategoriasTable } from "@/features/categorias/components/CategoriasTable";

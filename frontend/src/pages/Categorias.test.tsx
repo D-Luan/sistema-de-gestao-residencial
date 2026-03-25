@@ -1,15 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Categorias } from './Categorias';
-import { financeiroService } from '@/services/financeiroService';
+import { financeiroService } from '@/features/financeiro/financeiroService';
 
-vi.mock('@/services/financeiroService', () => ({
+vi.mock('@/features/financeiro/financeiroService', () => ({
     financeiroService: {
         obterTotaisPorCategoria: vi.fn()
     }
 }));
 
-vi.mock('@/services/categoriaService', () => ({
+vi.mock('@/features/categorias/categoriaService', () => ({
     categoriaService: {
         criar: vi.fn()
     }

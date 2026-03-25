@@ -1,14 +1,14 @@
-import { api } from "./api";
-import type { RelatorioPaginadoResposta, RelatorioPessoaResposta, RelatorioCategoriaResposta, RelatorioGeralResposta} from "../types/Financeiro";
+import { api } from "../../lib/api";
+import type { RelatorioPaginadoResposta, RelatorioPessoaResposta, RelatorioCategoriaResposta, RelatorioGeralResposta} from "./financeiro.types";
 
 /**
- * Serviço para consumo de relatórios e totalizadores.
- * Separado dos serviços de CRUD (Pessoa/Categoria) para respeitar o Princípio da Responsabilidade Única (SRP).
+ * Serviço especializado em consultas agregadas.
+ * Centraliza as chamadas que realizam cálculos de saldo e somatórios no back-end,
+ * garantindo que a lógica de negócio financeira seja processada no .NET.
  */
 export const financeiroService = {
     /**
-     * Atende ao requisito "Consulta de totais por pessoa".
-     * Traz a listagem paginada unida ao totalizador geral da aplicação.
+     * Recupera o relatório de pessoas com seus respectivos saldos.
      */
     obterTotaisPorPessoa: async (pagina = 1, tamanhoPagina = 10): Promise<RelatorioPaginadoResposta<RelatorioPessoaResposta>> => {
         const response = await api.get<RelatorioPaginadoResposta<RelatorioPessoaResposta>>("/financeiro/pessoas", {
@@ -17,6 +17,9 @@ export const financeiroService = {
         return response.data;
     },
 
+    /**
+     * Recupera o relatório de categorias com seus respectivos saldos.
+     */
     obterTotaisPorCategoria: async (): Promise<RelatorioGeralResposta<RelatorioCategoriaResposta>> => {
         const response = await api.get<RelatorioGeralResposta<RelatorioCategoriaResposta>>("/financeiro/categorias");
         return response.data;

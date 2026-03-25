@@ -1,6 +1,7 @@
 /**
- * DTOs alinhados com os relatórios do Backend.
- * Os totais e saldos já vêm pré-calculados da API, garantindo consistência financeira.
+ * Interfaces para representação de dados consolidados e relatórios.
+ * Estes tipos facilitam a exibição dos balanços financeiros exigidos no teste,
+ * unindo dados cadastrais com somatórios de transações.
  */
 
 export interface RelatorioPaginadoResposta<T> {
@@ -13,6 +14,9 @@ export interface RelatorioPaginadoResposta<T> {
     saldoGeralLiquido: number;
 }
 
+/**
+ * Representa o balanço financeiro individual de uma pessoa.
+ */
 export interface RelatorioPessoaResposta {
     id: number;
     nome: string;
@@ -22,6 +26,9 @@ export interface RelatorioPessoaResposta {
     saldo: number;
 }
 
+/**
+ * Representa o balanço financeiro individual de uma categoria.
+ */
 export interface RelatorioCategoriaResposta {
     id: number;
     descricao: string;
@@ -31,6 +38,7 @@ export interface RelatorioCategoriaResposta {
     saldo: number;
 }
 
+// Wrapper para listas que não necessitam de paginação, mas exigem totais gerais
 export interface RelatorioGeralResposta<T> {
     itens: T[];
     totalGeralReceitas: number;

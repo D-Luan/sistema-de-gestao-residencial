@@ -1,4 +1,4 @@
-import { api } from "../../services/api";
+import { api } from "../../lib/api";
 import type { TransacaoRequisicao, TransacaoResposta } from "./transacoes.types";
 import type { PaginacaoResposta } from "../pessoas/pessoas.types";
 

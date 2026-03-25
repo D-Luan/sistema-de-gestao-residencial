@@ -1,6 +1,6 @@
 import { Tag } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import type { RelatorioGeralResposta, RelatorioCategoriaResposta } from "@/types/Financeiro";
+import type { RelatorioGeralResposta, RelatorioCategoriaResposta } from "@/features/financeiro/financeiro.types";
 
 interface CategoriasTableProps {
     relatorio: RelatorioGeralResposta<RelatorioCategoriaResposta> | null;

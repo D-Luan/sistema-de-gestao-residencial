@@ -1,4 +1,4 @@
-import { api } from "../../services/api";
+import { api } from "../../lib/api";
 import type { CategoriaRequisicao, CategoriaResposta } from "@/features/categorias/categorias.types";
 
 /**

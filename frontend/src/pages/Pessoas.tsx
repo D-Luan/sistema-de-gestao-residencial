@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { pessoaService } from "@/features/pessoas/pessoaService";
-import { financeiroService } from "@/services/financeiroService";
+import { financeiroService } from "@/features/financeiro/financeiroService";
 import type { PessoaRequisicao } from "@/features/pessoas/pessoas.types";
-import type { RelatorioPessoaResposta, RelatorioPaginadoResposta } from "@/types/Financeiro";
+import type { RelatorioPessoaResposta, RelatorioPaginadoResposta } from "@/features/financeiro/financeiro.types";
 
 import { Button } from "@/components/ui/button";
 import { PessoasTable } from "@/features/pessoas/components/PessoasTable";
@@ -15,12 +15,14 @@ import { PessoaFormModal } from "@/features/pessoas/components/PessoaFormModal";
  * Gerencia a sincronização entre a listagem (com totais financeiros) e as operações de CRUD.
  */
 export function Pessoas() {
+    // Estado do relatório paginado que une dados cadastrais e financeiros
     const [relatorio, setRelatorio] = useState<RelatorioPaginadoResposta<RelatorioPessoaResposta> | null>(null);
     const [carregando, setCarregando] = useState(false);
 
     const [paginaAtual, setPaginaAtual] = useState(1);
     const tamanhoPagina = 10;
 
+    // Gerenciamento de estado do modal de formulário
     const [modalAberto, setModalAberto] = useState(false);
     const [pessoaEditando, setPessoaEditando] = useState<RelatorioPessoaResposta | null>(null);
     const [formData, setFormData] = useState<PessoaRequisicao>({ nome: "", idade: 0 });
@@ -30,6 +32,7 @@ export function Pessoas() {
         carregarDados();
     }, [paginaAtual]);
 
+    // Busca dados consolidados (Pessoas + Balanços Financeiros)
     const carregarDados = async () => {
         try {
             setCarregando(true);
@@ -56,6 +59,7 @@ export function Pessoas() {
         setModalAberto(true);
     };
 
+    // Submissão do formulário com tratamento de erros vindos do backend (.NET Validation)
     const handleSalvar = async () => {
         try {
             setErroFormulario(null);
