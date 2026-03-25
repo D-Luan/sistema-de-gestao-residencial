@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-
 import type { TransacaoRequisicao, TipoTransacao } from "@/features/transacoes/transacoes.types";
 import type { PessoaResposta } from "@/features/pessoas/pessoas.types";
 import type { CategoriaResposta } from "@/features/categorias/categorias.types";
@@ -89,17 +89,14 @@ export function TransacaoFormModal({
                             />
                         </div>
 
-                        <div className="space-y-2 col-span-2">
+                        <div className="space-y-2 col-span-2 flex flex-col">
                             <Label htmlFor="pessoa">Pessoa</Label>
-                            <select
-                                id="pessoa"
+                            <SearchableSelect
+                                options={pessoas.map(p => ({ label: `${p.nome} (${p.idade} anos)`, value: p.id }))}
                                 value={formData.pessoaId}
-                                onChange={(e) => setFormData({ ...formData, pessoaId: parseInt(e.target.value) })}
-                                className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30"
-                            >
-                                <option value={0}>Selecione...</option>
-                                {pessoas.map(p => <option key={p.id} value={p.id}>{p.nome} ({p.idade} anos)</option>)}
-                            </select>
+                                onChange={(val) => setFormData({ ...formData, pessoaId: val })}
+                                placeholder="Pesquise e selecione uma pessoa..."
+                            />
                         </div>
 
                         <div className="space-y-2 col-span-2">
