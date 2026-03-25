@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
-import { Plus, ChevronLeft, ChevronRight, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { transacaoService } from "@/services/transacaoService";
+import { transacaoService } from "@/features/transacoes/transacaoService";
 import { pessoaService } from "@/features/pessoas/pessoaService";
 import { categoriaService } from "@/features/categorias/categoriaService";
 
-import type { TransacaoResposta, TransacaoRequisicao, TipoTransacao } from "@/types/Transacao";
+import type { TransacaoResposta, TransacaoRequisicao } from "@/features/transacoes/transacoes.types";
 import type { PessoaResposta } from "@/features/pessoas/pessoas.types";
 import type { CategoriaResposta } from "@/features/categorias/categorias.types";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { TransacoesTable } from "@/features/transacoes/components/TransacoesTable";
+import { TransacaoFormModal } from "@/features/transacoes/components/TransacaoFormModal";
 
 /**
- * Página de gerenciamento de Transações.
- * Controla a listagem paginada e o formulário de cadastro, orquestrando as dependências 
- * de Pessoas e Categorias para montagem do dropdown de seleção.
+ * Página principal de Transações.
+ * Gerencia o carregamento assíncrono de dependências (Pessoas e Categorias)
+ * necessárias para o cadastro de novos lançamentos.
  */
 export function Transacoes() {
     const [transacoes, setTransacoes] = useState<TransacaoResposta[]>([]);
@@ -26,12 +24,10 @@ export function Transacoes() {
     const [categorias, setCategorias] = useState<CategoriaResposta[]>([]);
     const [carregando, setCarregando] = useState(false);
 
-    // Controle de Paginação controlada pelo servidor
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [totalRegistros, setTotalRegistros] = useState(0);
     const tamanhoPagina = 10;
 
-    // Estado do Modal de Cadastro    
     const [modalAberto, setModalAberto] = useState(false);
     const [erroFormulario, setErroFormulario] = useState<string | null>(null);
     const [formData, setFormData] = useState<TransacaoRequisicao>({
@@ -42,7 +38,7 @@ export function Transacoes() {
         carregarDados();
     }, [paginaAtual]);
 
-    // Busca os dados auxiliares apenas uma vez para popular o formulário
+    // Carrega Pessoas e Categorias uma única vez para popular os selects do modal
     useEffect(() => {
         const carregarDependencias = async () => {
             try {
@@ -77,10 +73,6 @@ export function Transacoes() {
         setModalAberto(true);
     };
 
-    /**
-     * Tenta salvar a transação e intercepta as validações de Domínio do backend.
-     * O erro em formato ProblemDetails é extraído e exibido ao usuário.
-     */
     const handleSalvar = async () => {
         try {
             setErroFormulario(null);
@@ -96,10 +88,6 @@ export function Transacoes() {
                 setErroFormulario(data?.detail || "Erro inesperado.");
             }
         }
-    };
-
-    const formatarMoeda = (valor: number) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
     };
 
     const totalPaginas = Math.ceil(totalRegistros / tamanhoPagina);
@@ -121,49 +109,10 @@ export function Transacoes() {
                     </Button>
                 </div>
 
-                <div className="bg-white rounded-md border border-slate-200">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="bg-slate-50">
-                                <TableHead>Descrição</TableHead>
-                                <TableHead>Pessoa</TableHead>
-                                <TableHead>Categoria</TableHead>
-                                <TableHead className="text-right">Valor</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {carregando ? (
-                                <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24 text-slate-500">Carregando...</TableCell>
-                                </TableRow>
-                            ) : transacoes.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24 text-slate-500">Nenhuma transação registrada.</TableCell>
-                                </TableRow>
-                            ) : (
-                                transacoes.map((t) => (
-                                    <TableRow key={t.id}>
-                                        <TableCell className="font-medium text-slate-900">
-                                            <div className="flex items-center gap-2">
-                                                {t.tipo === 1 ? (
-                                                    <ArrowDownCircle className="w-4 h-4 text-red-500" />
-                                                ) : (
-                                                    <ArrowUpCircle className="w-4 h-4 text-emerald-500" />
-                                                )}
-                                                {t.descricao}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-slate-600">{t.nomePessoa}</TableCell>
-                                        <TableCell className="text-slate-600">{t.descricaoCategoria}</TableCell>
-                                        <TableCell className={`text-right font-medium ${t.tipo === 1 ? 'text-red-600' : 'text-emerald-600'}`}>
-                                            {t.tipo === 1 ? '-' : '+'}{formatarMoeda(t.valor)}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
+                <TransacoesTable
+                    transacoes={transacoes}
+                    carregando={carregando}
+                />
 
                 {totalRegistros > 0 && (
                     <div className="flex items-center justify-between">
@@ -181,94 +130,17 @@ export function Transacoes() {
                     </div>
                 )}
 
-                <Dialog open={modalAberto} onOpenChange={setModalAberto}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Nova Transação</DialogTitle>
-                            <DialogDescription className="sr-only">Cadastre uma nova transação financeira.</DialogDescription>
-                        </DialogHeader>
-
-                        <div className="space-y-4 py-4">
-                            {erroFormulario && (
-                                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                                    {erroFormulario}
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2 col-span-2">
-                                    <Label htmlFor="descricao">Descrição</Label>
-                                    <Input
-                                        id="descricao"
-                                        value={formData.descricao}
-                                        onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                                        placeholder="Ex: Compra do mês"
-                                        maxLength={400}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="tipo">Tipo</Label>
-                                    <select
-                                        id="tipo"
-                                        value={formData.tipo}
-                                        onChange={(e) => setFormData({ ...formData, tipo: parseInt(e.target.value) as TipoTransacao })}
-                                        className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30"
-                                    >
-                                        <option value={1}>Despesa</option>
-                                        <option value={2}>Receita</option>
-                                    </select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="valor">Valor (R$)</Label>
-                                    <Input
-                                        id="valor"
-                                        type="number"
-                                        step="0.01"
-                                        min="0.01"
-                                        value={formData.valor === 0 ? "" : formData.valor}
-                                        onChange={(e) => setFormData({ ...formData, valor: parseFloat(e.target.value) || 0 })}
-                                        placeholder="0,00"
-                                    />
-                                </div>
-
-                                <div className="space-y-2 col-span-2">
-                                    <Label htmlFor="pessoa">Pessoa</Label>
-                                    <select
-                                        id="pessoa"
-                                        value={formData.pessoaId}
-                                        onChange={(e) => setFormData({ ...formData, pessoaId: parseInt(e.target.value) })}
-                                        className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30"
-                                    >
-                                        <option value={0}>Selecione...</option>
-                                        {pessoas.map(p => <option key={p.id} value={p.id}>{p.nome} ({p.idade} anos)</option>)}
-                                    </select>
-                                </div>
-
-                                <div className="space-y-2 col-span-2">
-                                    <Label htmlFor="categoria">Categoria</Label>
-                                    <select
-                                        id="categoria"
-                                        value={formData.categoriaId}
-                                        onChange={(e) => setFormData({ ...formData, categoriaId: parseInt(e.target.value) })}
-                                        className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30"
-                                    >
-                                        <option value={0}>Selecione...</option>
-                                        {categorias.map(c => <option key={c.id} value={c.id}>{c.descricao}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setModalAberto(false)}>Cancelar</Button>
-                            <Button onClick={handleSalvar} className="bg-slate-900 text-white hover:bg-slate-800">
-                                Registrar
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <TransacaoFormModal
+                    aberto={modalAberto}
+                    onOpenChange={setModalAberto}
+                    formData={formData}
+                    setFormData={setFormData}
+                    erroFormulario={erroFormulario}
+                    pessoas={pessoas}
+                    categorias={categorias}
+                    onSalvar={handleSalvar}
+                    onCancelar={() => setModalAberto(false)}
+                />
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 /**
- * Interfaces TypeScript alinhadas com os DTOs do Backend.
+ * Definições de tipo para o domínio de Transações.
+ * 1 representa Saída (Despesa) e 2 representa Entrada (Receita).
  */
-
 export type TipoTransacao = 1 | 2;
 
 export const TipoTransacaoLabel: Record<TipoTransacao, string> = {
@@ -9,11 +9,6 @@ export const TipoTransacaoLabel: Record<TipoTransacao, string> = {
     2: 'Receita'
 };
 
-/**
- * Modelo de resposta desnormalizado. 
- * O backend já resolve as chaves estrangeiras e entrega o NomePessoa e DescricaoCategoria.
- * Isso otimiza a tabela do frontend, evitando múltiplas requisições adicionais (N+1 queries).
- */
 export interface TransacaoResposta {
     id: number;
     descricao: string;

@@ -1,17 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Transacoes } from './Transacoes';
-import { transacaoService } from '@/services/transacaoService';
+import { transacaoService } from '@/features/transacoes/transacaoService';
 
-vi.mock('@/services/transacaoService', () => ({
+vi.mock('@/features/transacoes/transacaoService', () => ({
     transacaoService: {
         obterTodas: vi.fn()
     }
 }));
 
-// Mocks dos serviços para garantir o isolamento do componente.
-// Diferente das outras telas, aqui mockamos Pessoas e Categorias também, pois 
-// o formulário de nova transação depende desses dados para preencher os Selects.
 vi.mock('@/features/pessoas/pessoaService', () => ({
     pessoaService: { obterTodas: vi.fn().mockResolvedValue({ itens: [] }) }
 }));
@@ -20,9 +17,9 @@ vi.mock('@/features/categorias/categoriaService', () => ({
 }));
 
 /**
- * Suíte de testes da página de listagem e cadastro de Transações.
- * Foca em validar a renderização da tabela, a ausência de indicadores não pertinentes à tela 
- * e a montagem correta do formulário com múltiplas dependências.
+ * Testes unitários para Transações.
+ * Verifica se a interface se comporta corretamente ao abrir o formulário
+ * e se os estados de lista vazia são apresentados.
  */
 describe('Página Transações', () => {
     beforeEach(() => {
@@ -39,8 +36,6 @@ describe('Página Transações', () => {
 
         expect(screen.getByText('Transações')).toBeInTheDocument();
         
-        // Valida uma decisão de UX/UI: a tela de transações é focada no fluxo de caixa (extrato).
-        // Os cards de totais são responsabilidade exclusiva das páginas de Pessoas e Categorias.
         expect(screen.queryByText('Total de Receitas')).not.toBeInTheDocument();
         expect(screen.queryByText('Saldo Líquido')).not.toBeInTheDocument();
 
