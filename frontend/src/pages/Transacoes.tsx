@@ -3,11 +3,11 @@ import { Plus, ChevronLeft, ChevronRight, ArrowDownCircle, ArrowUpCircle } from 
 
 import { transacaoService } from "@/services/transacaoService";
 import { pessoaService } from "@/features/pessoas/pessoaService";
-import { categoriaService } from "@/services/categoriaService";
+import { categoriaService } from "@/features/categorias/categoriaService";
 
 import type { TransacaoResposta, TransacaoRequisicao, TipoTransacao } from "@/types/Transacao";
 import type { PessoaResposta } from "@/features/pessoas/pessoas.types";
-import type { CategoriaResposta } from "@/types/Categoria";
+import type { CategoriaResposta } from "@/features/categorias/categorias.types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

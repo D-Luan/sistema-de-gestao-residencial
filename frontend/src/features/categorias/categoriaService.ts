@@ -1,9 +1,9 @@
-import { api } from "./api";
-import type { CategoriaRequisicao, CategoriaResposta } from "../types/Categoria";
+import { api } from "../../services/api";
+import type { CategoriaRequisicao, CategoriaResposta } from "@/features/categorias/categorias.types";
 
 /**
- * Serviço responsável por encapsular as chamadas HTTP relacionadas à entidade Categoria.
- * Isola as regras de comunicação do backend dos componentes visuais.
+ * Serviço responsável pela persistência de categorias.
+ * Garante a comunicação com o back-end.
  */
 export const categoriaService = {
     obterTodas: async (): Promise<CategoriaResposta[]> => {

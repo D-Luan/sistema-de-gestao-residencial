@@ -12,10 +12,10 @@ vi.mock('@/services/transacaoService', () => ({
 // Mocks dos serviços para garantir o isolamento do componente.
 // Diferente das outras telas, aqui mockamos Pessoas e Categorias também, pois 
 // o formulário de nova transação depende desses dados para preencher os Selects.
-vi.mock('@/services/pessoaService', () => ({
+vi.mock('@/features/pessoas/pessoaService', () => ({
     pessoaService: { obterTodas: vi.fn().mockResolvedValue({ itens: [] }) }
 }));
-vi.mock('@/services/categoriaService', () => ({
+vi.mock('@/features/categorias/categoriaService', () => ({
     categoriaService: { obterTodas: vi.fn().mockResolvedValue([]) }
 }));
 

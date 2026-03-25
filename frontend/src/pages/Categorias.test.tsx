@@ -16,9 +16,8 @@ vi.mock('@/services/categoriaService', () => ({
 }));
 
 /**
- * Suíte de testes da página de Categorias.
- * Foca em garantir que o requisito opcional (Totais por Categoria) está integrado à UI,
- * validando a renderização do rodapé agregador e o fluxo de cadastro.
+ * Testes para a feature de Categorias.
+ * Valida a renderização do relatório consolidado e o comportamento do modal de criação.
  */
 describe('Página Categorias', () => {
     beforeEach(() => {
