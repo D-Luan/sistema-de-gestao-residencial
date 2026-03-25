@@ -26,7 +26,7 @@ export function Transacoes() {
 
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [totalRegistros, setTotalRegistros] = useState(0);
-    const tamanhoPagina = 10;
+    const tamanhoPagina = 20;
 
     const [modalAberto, setModalAberto] = useState(false);
     const [erroFormulario, setErroFormulario] = useState<string | null>(null);
@@ -92,6 +92,9 @@ export function Transacoes() {
 
     const totalPaginas = Math.ceil(totalRegistros / tamanhoPagina);
 
+    const registroInicial = (paginaAtual - 1) * tamanhoPagina + 1;
+    const registroFinal = Math.min(paginaAtual * tamanhoPagina, totalRegistros);
+
     return (
         <div className="space-y-6">
             <div>
@@ -115,16 +118,41 @@ export function Transacoes() {
                 />
 
                 {totalRegistros > 0 && (
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-4">
                         <span className="text-sm text-slate-500">
-                            Mostrando {transacoes.length} de {totalRegistros} registros
+                            Mostrando {registroInicial}-{registroFinal} de {totalRegistros} registros
                         </span>
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="sm" disabled={paginaAtual === 1} onClick={() => setPaginaAtual(p => p - 1)}>
-                                <ChevronLeft className="w-4 h-4 mr-1" /> Anterior
+
+                        <div className="flex gap-1">
+                            <Button
+                                variant="outline"
+                                size="icon-sm"
+                                disabled={paginaAtual === 1}
+                                onClick={() => setPaginaAtual(p => p - 1)}
+                            >
+                                <ChevronLeft className="w-4 h-4" />
                             </Button>
-                            <Button variant="outline" size="sm" disabled={paginaAtual >= totalPaginas} onClick={() => setPaginaAtual(p => p + 1)}>
-                                Próxima <ChevronRight className="w-4 h-4 ml-1" />
+
+                            {/* Gera os botões numéricos dinamicamente: 1, 2, 3... */}
+                            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(page => (
+                                <Button
+                                    key={page}
+                                    variant={paginaAtual === page ? "default" : "outline"}
+                                    size="icon-sm"
+                                    className={paginaAtual === page ? "bg-slate-900 text-white" : "text-slate-600"}
+                                    onClick={() => setPaginaAtual(page)}
+                                >
+                                    {page}
+                                </Button>
+                            ))}
+
+                            <Button
+                                variant="outline"
+                                size="icon-sm"
+                                disabled={paginaAtual >= totalPaginas}
+                                onClick={() => setPaginaAtual(p => p + 1)}
+                            >
+                                <ChevronRight className="w-4 h-4" />
                             </Button>
                         </div>
                     </div>
