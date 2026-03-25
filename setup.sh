@@ -12,10 +12,10 @@ sleep 3
 
 echo "Configurando ambiente Python para os dados de teste..."
 cd scripts/
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt --quiet
-cd ../../
+cd ..
 
 echo "Ambiente pronto!"
 echo "Passo 1: Inicie a API (via Visual Studio, Rider ou 'dotnet run' dentro de GestaoResidencial.Api)."
